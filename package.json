@@ -1,11 +1,14 @@
 {
-  "name": "easy-theme",
-  "version": "0.0.3",
+  "name": "@haydncomley/easy-theme",
+  "version": "0.0.5",
   "description": "A SCSS based theme generation tool that exposes CSS Variables as well as some nice-to-have SCSS tools for modern day application development.",
   "homepage": "https://github.com/haydncomley/easy-theme",
   "repository": {
     "type": "git",
     "url": "https://github.com/haydncomley/easy-theme.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/haydncomley"
   },
   "keywords": [
     "SCCS",
