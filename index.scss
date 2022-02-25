@@ -1,0 +1,108 @@
+@use "sass:color";
+@use "sass:map";
+@use "sass:list";
+
+@mixin ThemeColor($selector, $hex, $contrast, $generate-extras, $steps) {
+    --theme-#{$selector}: #{$hex};
+    --theme-#{$selector}-contrast: #{$contrast};
+    --theme-#{$selector}-rgb: #{color.red($hex), color.green($hex), color.blue($hex)};
+    --theme-#{$selector}-contrast-rgb: #{color.red($contrast), color.green($contrast), color.blue($contrast)};
+
+    @if ($generate-extras) {
+        @if ($steps) {
+            @each $step, $value in $steps {
+                @include ColorStep($selector, $step, $hex, $value);
+            }
+        } @else {
+            @include ColorStep($selector, 'lighter', $hex, 25%);
+            @include ColorStep($selector, 'light', $hex, 15%);
+            @include ColorStep($selector, 'dark', $hex, -15%);
+            @include ColorStep($selector, 'darker', $hex, -25%);
+        }
+    }
+}
+
+@mixin ColorStep($selector, $step, $hex, $value) {
+    $color: color.adjust($hex, $lightness: $value);
+    --theme-#{$selector}-#{$step}: #{$color};
+    // --theme-#{$selector}-#{$step}-rgb: #{color.red($color), color.green($color), color.blue($color)};
+}
+
+@mixin GeneratePalette($palette, $steps) {
+    @each $selector, $colours in $palette{
+        $legnth: list.length($colours);
+        @if $legnth > 2 {
+            @include ThemeColor($selector, nth($colours, 1), nth($colours, 2), nth($colours, 3), $steps);
+        } @else {
+            @include ThemeColor($selector, nth($colours, 1), nth($colours, 2), false, $steps);
+        }
+        
+    }
+}
+
+@mixin DarkMode {
+    @media (prefers-color-scheme: dark)  {
+        @content;
+    }
+}
+
+// Get a theme variable from a selector name
+@function Color($selector, $modifier: false) {
+    @if ($modifier) {
+        @if (type-of($modifier) == 'number') {
+            @return rgba(var(--theme-#{$selector}-rgb), #{$modifier});
+        }
+        @else {
+            @return var(--theme-#{$selector}-#{$modifier});
+        }
+    }
+    @else {
+        @return var(--theme-#{$selector});
+    }
+}
+
+// Get the text colour for a given selector name
+@function Text($selector, $modifier: false) {
+    @return Color($selector + "-contrast", $modifier);
+}
+
+// Use and render the theme variables as css
+@mixin UseTheme($theme) {
+    $_light: map.get($theme, "light");
+    $_dark: map.get($theme, "dark");
+    $_steps: map.get($theme, "steps");
+
+    :root {
+        @include GeneratePalette($_light, $_steps);
+
+        @if $_dark {
+            @include DarkMode {
+                @include GeneratePalette($_dark, $_steps);
+            }
+        }
+    }
+}
+
+@mixin MobileTiny {
+    @media screen and (max-width: 350px) {
+        @content;
+    }
+}
+
+@mixin Mobile {
+    @media screen and (max-width: 600px) {
+        @content;
+    }
+}
+
+@mixin Tablet {
+    @media screen and (max-width: 1000px) {
+        @content;
+    }
+}
+
+@mixin NotMobile {
+    @media screen and (min-width: 600px) {
+        @content;
+    }
+}

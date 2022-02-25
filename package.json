@@ -1,0 +1,23 @@
+{
+  "name": "easy-theme",
+  "version": "0.0.2",
+  "description": "A SCSS based theme generation tool that exposes CSS Variables as well as some nice-to-have SCSS tools for modern day application development.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "SCCS",
+    "Theming",
+    "Application",
+    "Web",
+    "Mobile",
+    "Tools",
+    "Generator",
+    "Generation",
+    "CSS",
+    "Variables"
+  ],
+  "author": "Haydn Comley",
+  "license": "ISC"
+}
