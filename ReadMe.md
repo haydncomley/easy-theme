@@ -1,15 +1,54 @@
-# 🎨 Easy Theme
-This is a simple package that uses some SASS awesomeness in order to create a CSS Variable based theming solution quick and easily.
+# Easy Theme 🎨
+This package has a bunch of helpful SCSS tools you can use to theme your application in a fast and reliable way.
 
-It also exposes some custom functions that wrap media queries for easy access to common mobile sizes, dark-mode and more!
+Theming is made super easy and generates down to CSS variables. As well as that, this package also has some useful SCSS mixins that cover all the basics from detecting dark-mode, mobile devices and more!
 
 ```
 npm install easy-theme
 ```
 
----
+## "Here's one I made earlier" 🧱
+This is just a quick overview of some of the features within `easy-theme` and how you might work. Just `@use` the styles in any component or SCSS file you want.
+```scss
+// index.scss
 
-## ⚙️ Theme Syntax
+// 1. Import the tools.
+@use "~easy-theme" as theme;
+
+// 2. Create your theme.
+$light-theme: (
+    'background': (#FFFFFF, #000000),
+    'primary': (#1BFF72, #FFFFFF, true),
+);
+
+$dark-theme: (
+    'background': (#000000, #FFFFFF),
+);
+
+// 3. Let easy-theme do the rest!
+@include theme.UseTheme((
+    light: $light-theme,
+    dark: $dark-theme,
+));
+
+html, body {
+    background: theme.Color('background');
+}
+```
+
+```scss
+// button.scss
+@use "~easy-theme" as theme;
+
+button {
+    background: theme.Color('primary');
+    color: theme.Text('primary');
+    border: 1px solid theme.Color('primary', 'darker');
+}
+```
+
+
+## Theming Syntax ⚙️
 - `css-variable-name: string`: The name of the css variable to generator (e.g. background, navbar, primary, etc.)
 - `color: hex`: The core variable color. (a background might be white or black or this could be a brand color etc.)
 - `contrast: hex`: This is a contrasting color for this variable, this is mainly used for when you want to display text or icons on-top of the colour provided.
@@ -18,11 +57,11 @@ npm install easy-theme
 ---
 
 ## 🎬 Getting Started
-1. Import `easy-theme`.
+1. Import `easy-theme` into any file that you want to use the tooling.
 ```scss
 @use "~easy-theme" as theme;
 ```
-2. Create your theme!
+2. Define your colours
 ```scss
 $light-theme: (
     // Basic Variables
@@ -32,21 +71,20 @@ $light-theme: (
     'primary': (#1BFF72, #FFFFFF, true),
 
     // Syntax:
-    '<css-variable-name>': (<color>, <contrast>, <create-steps?>),
+    'variable-name': (color, contrast, create-steps),
 );
 ```
-3. Generate the theme.
+3. Generate the theme (normally you would define this in your index or global style sheet but anywhere will work).
 ```scss
+// index.scss
 @include theme.UseTheme((
     light: $light-theme
 ));
 ```
 4. Use your theme!
-   - You will see in your `:root` object all the css variables generated for your theme. These will include the base hex values provided, the contrasting values but also an `rgb` variable as well just in-case you want to do some on-the-fly opacity adjustments.
-   - You can either straight up use the CSS variable names generated like `var(--theme-primary)` or you can also use the tooling to get extra fancy with your styles.
 
 ```scss
-// Use the theme tooling for easier readability
+// Use the custom tools for easier readability
 button {
     background: theme.Color('primary');
     color: theme.Text('primary');
@@ -71,34 +109,11 @@ button {
 }
 ```
 
-## 🎥 All Together Now.
-This is a example of how your `.scss` file might look after following all the steps above.
-```scss
-@use "~easy-theme" as theme;
-
-$light-theme: (
-    'background': (#FFFFFF, #000000),
-    'primary': (#1BFF72, #FFFFFF, true),
-);
-
-@include theme.UseTheme((
-    light: $light-theme
-));
-
-button {
-    background: theme.Color('primary');
-    color: theme.Text('primary');
-    border: 1px solid theme.Color('primary', 'darker');
-}
-```
-
----
-
-## 👷‍♀️ Advanced Theming (Dark Mode + Custom Steps)
+#  Dark-mode theming and custom steps.
 If you want to give your application some extra ✨ spice ✨ you can jazz up your theme with dark-mode and also custom steps.
 
-### 🌙 Dark mode
-Dark more is super easy to get going, just create another SCSS variable like the `$light-mode` we have above and shove your variables in there. These will overwrite any variables when a user has `@media (prefers-color-scheme: dark)` (aka: "Dark Mode") active on their device.
+## Dark theme 🌙
+Dark more is super easy to get going, just create another object like the `$light-mode` we have above and shove your variables in there. These will overwrite any variables when a user has `@media (prefers-color-scheme: dark)` (aka: "Dark Mode") active on their device.
 ```scss
 $light-theme: (
     'background': (#FFFFFF, #000000),
@@ -115,14 +130,14 @@ $dark-theme: (
 ));
 ```
 
-### 🦶 Custom Steps
-By default if you don't provide any custom steps we will generate the following:
+## Custom Steps 🦶
+By default if you don't provide any custom steps we will generate the following when you pass `true` to a theme colour definition.
 - Lighter: `+25%`
 - Light: `+15%`
 - Dark: `-15%`
 - Darker: `-25%`
 
-All you need to do is include a new map of values within the theme and you'll be off to the races with your custom values.
+All you need to do is include a new map of values within the theme and you'll be off to the races with your custom steps.
 
 ```scss
 @include theme.UseTheme((
@@ -137,29 +152,51 @@ All you need to do is include a new map of values within the theme and you'll be
 ));
 ```
 
----
+## Helpers & Tools
+Here is a list of some nice helpers (mixins) I've made that you can use to access media queries etc, but with a little more ease. 
 
-## 📲 Mobiles, Tablets & Responsiveness
-To include mobile specific styling simply use the `mixins` provided rather than writing out a million different media queries.
+### Mobile / Responsiveness 📱
 ```scss
-body {
-    @include theme.NotMobile {
-        // 📵 We're a computer or something...
-    }
+@include theme.NotMobile {
+    // 📵 We're a computer or something...
+}
 
-    @include theme.Tablet {
-        // 💻 We're a little smaller than a computer.
-        // Probably a tablet, but not a mobile.
-    }
+@include theme.Tablet {
+    // 💻 We're probably a tablet, or at least a small computer...
+}
 
-    @include theme.Mobile {
-        // 📱 We are a mobile device!!
-        background: red;
-    }
+@include theme.Mobile {
+    // 📱 We are a mobile (most-likely)!
+}
 
-    @include theme.MobileTiny {
-        // 🐜 We are an itty-bitty device like an iPhone 5
-        background: green;
-    }
+@include theme.MobileTiny {
+    // 🐜 We are an itty-bitty tiny device.
+}
+```
+
+### Preferences & Accessibility 🔤
+```scss
+@include theme.DarkMode {
+    // 🌙 Dark-mode is enabled
+}
+
+@include theme.ReducedMotion {
+    // 🏃‍♂️ The user want's to reduce animations on their device
+}
+
+@include theme.Landscape {
+    // ⛰ The device is landscape...
+}
+
+@include theme.Portrait {
+    // 🖼 The device is portrait...
+}
+
+@include theme.JavaScriptDisabled {
+    // ❌ Scripting is not allowed on the device.
+}
+
+@include theme.JavaScriptEnabled {
+    // 👩‍💻 Scripting is allowed!
 }
 ```

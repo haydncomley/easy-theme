@@ -40,12 +40,6 @@
     }
 }
 
-@mixin DarkMode {
-    @media (prefers-color-scheme: dark)  {
-        @content;
-    }
-}
-
 // Get a theme variable from a selector name
 @function Color($selector, $modifier: false) {
     @if ($modifier) {
@@ -80,6 +74,42 @@
                 @include GeneratePalette($_dark, $_steps);
             }
         }
+    }
+}
+
+@mixin DarkMode {
+    @media (prefers-color-scheme: dark)  {
+        @content;
+    }
+}
+
+@mixin ReducedMotion {
+    @media (prefers-reduced-motion)  {
+        @content;
+    }
+}
+
+@mixin Landscape {
+    @media (orientation: landscape)  {
+        @content;
+    }
+}
+
+@mixin Portrait {
+    @media (orientation: portrait)  {
+        @content;
+    }
+}
+
+@mixin JavaScriptDisabled {
+    @media (scripting: none)  {
+        @content;
+    }
+}
+
+@mixin JavaScriptEnabled {
+    @media (scripting: enabled)  {
+        @content;
     }
 }
 
