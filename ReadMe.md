@@ -1,14 +1,14 @@
 # Easy Theme 🎨
-This package has a bunch of helpful SCSS tools you can use to theme your application in a fast and reliable way.
+This package has a bunch of helpful SCSS tools that you can use to theme your application in a fast and reliable way.
 
-Theming is made super easy and generates down to CSS variables. As well as that, this package also has some useful SCSS mixins that cover all the basics from detecting dark-mode, mobile devices and more!
+Theming is made super easy and it all generates down to CSS variables. As well as that, this package also has some useful SCSS mixins that cover the basics from dark-mode, responsiveness, mobiles and more!
 
 ```
 npm install easy-theme
 ```
 
 ## "Here's one I made earlier" 🧱
-This is just a quick overview of some of the features within `easy-theme` and how you might work. Just `@use` the styles in any component or SCSS file you want.
+This is just a quick overview of some of the features within `easy-theme` and how they work. Just `@use` the package in any SCSS file you want to use tht tooling.
 ```scss
 // index.scss
 
@@ -47,16 +47,7 @@ button {
 }
 ```
 
-
-## Theming Syntax ⚙️
-- `css-variable-name: string`: The name of the css variable to generator (e.g. background, navbar, primary, etc.)
-- `color: hex`: The core variable color. (a background might be white or black or this could be a brand color etc.)
-- `contrast: hex`: This is a contrasting color for this variable, this is mainly used for when you want to display text or icons on-top of the colour provided.
-- `create-steps?: boolean`: This is an optional value that if `true` will create extra variables for consistent theme steps (e.g. lighter, darker, darkest, etc.).
-
----
-
-## 🎬 Getting Started
+## Getting Started 🎬
 1. Import `easy-theme` into any file that you want to use the tooling.
 ```scss
 @use "~easy-theme" as theme;
@@ -71,12 +62,11 @@ $light-theme: (
     'primary': (#1BFF72, #FFFFFF, true),
 
     // Syntax:
-    'variable-name': (color, contrast, create-steps),
+    // 'variable-name': (color, contrast, create-steps?),
 );
 ```
 3. Generate the theme (normally you would define this in your index or global style sheet but anywhere will work).
 ```scss
-// index.scss
 @include theme.UseTheme((
     light: $light-theme
 ));
@@ -84,7 +74,6 @@ $light-theme: (
 4. Use your theme!
 
 ```scss
-// Use the custom tools for easier readability
 button {
     background: theme.Color('primary');
     color: theme.Text('primary');
@@ -96,7 +85,8 @@ button {
     }
 }
 
-// Use the generated CSS variables
+// Above will be compiled into the following for the browser.
+
 button {
     background: var(--theme-primary);
     color: var(--theme-primary-contrast);
@@ -104,16 +94,22 @@ button {
 
     &:disabled {
         background: rgba(var(--theme-primary-rgb), .5);
-        background-color: rgba(var(--theme-primary-contrast-rgb), .5);
+        color: rgba(var(--theme-primary-contrast-rgb), .5);
     }
 }
 ```
 
+## Theming Syntax ⚙️
+- `variable-name: string`: The name of the css variable to generate (e.g. background, navbar, primary, etc.)
+- `color: hex`: The core variable color.
+- `contrast: hex`: This is a contrasting color, this is mainly used for when you want to display text or icons on top of the colour provided.
+- `create-steps?: boolean`: This is an optional value that if `true` will create extra variables for consistent theme steps (e.g. lighter, darker, darkest, etc.).
+
 #  Dark-mode theming and custom steps.
-If you want to give your application some extra ✨ spice ✨ you can jazz up your theme with dark-mode and also custom steps.
+If you want to give your application some extra ✨ spice ✨ you can jazz up your theme with a dark mode and also some custom steps.
 
 ## Dark theme 🌙
-Dark more is super easy to get going, just create another object like the `$light-mode` we have above and shove your variables in there. These will overwrite any variables when a user has `@media (prefers-color-scheme: dark)` (aka: "Dark Mode") active on their device.
+Dark mode is super easy to get going, just create another object like the `$light-mode` we have above and shove your variables in there. These will overwrite any variables when a user has `@media (prefers-color-scheme: dark)` (aka: "Dark Mode") active on their device.
 ```scss
 $light-theme: (
     'background': (#FFFFFF, #000000),
@@ -152,8 +148,8 @@ All you need to do is include a new map of values within the theme and you'll be
 ));
 ```
 
-## Helpers & Tools
-Here is a list of some nice helpers (mixins) I've made that you can use to access media queries etc, but with a little more ease. 
+## Helpers, Tools & Mixins 🔨
+Here is a list of some "niceities" I've made that you can use to access media queries etc, but with a little more ease. 
 
 ### Mobile / Responsiveness 📱
 ```scss
@@ -170,7 +166,7 @@ Here is a list of some nice helpers (mixins) I've made that you can use to acces
 }
 
 @include theme.MobileTiny {
-    // 🐜 We are an itty-bitty tiny device.
+    // 🐜 We are an itty-bitty little device.
 }
 ```
 

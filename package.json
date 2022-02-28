@@ -1,6 +1,6 @@
 {
   "name": "easy-theme",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A SCSS based theme generation tool that builds down to CSS variables as well as some nice-to-have SCSS tools for modern day application styling.",
   "homepage": "https://github.com/haydncomley/easy-theme",
   "repository": {
