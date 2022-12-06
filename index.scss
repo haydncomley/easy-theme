@@ -10,10 +10,14 @@
 
     @if ($generate-extras) {
         @if ($steps) {
-            @each $step, $value in $steps {
+
+            @each $step,
+            $value in $steps {
                 @include ColorStep($selector, $step, $hex, $value);
             }
-        } @else {
+        }
+
+        @else {
             @include ColorStep($selector, 'lighter', $hex, 25%);
             @include ColorStep($selector, 'light', $hex, 15%);
             @include ColorStep($selector, 'dark', $hex, -15%);
@@ -25,31 +29,45 @@
 @mixin ColorStep($selector, $step, $hex, $value) {
     $color: color.adjust($hex, $lightness: $value);
     --theme-#{$selector}-#{$step}: #{$color};
-    // --theme-#{$selector}-#{$step}-rgb: #{color.red($color), color.green($color), color.blue($color)};
 }
 
 @mixin GeneratePalette($palette, $steps) {
-    @each $selector, $colours in $palette{
-        $legnth: list.length($colours);
-        @if $legnth > 2 {
+
+    @each $selector,
+    $colours in $palette {
+        $length: list.length($colours);
+
+        @if $length >2 {
             @include ThemeColor($selector, nth($colours, 1), nth($colours, 2), nth($colours, 3), $steps);
-        } @else {
+        }
+
+        @else {
             @include ThemeColor($selector, nth($colours, 1), nth($colours, 2), false, $steps);
         }
-        
+
+    }
+}
+
+@mixin GenerateVariables($variables) {
+
+    @each $selector,
+    $variable in $variables {
+        --theme-v-#{$selector}: #{$variable};
     }
 }
 
 // Get a theme variable from a selector name
 @function Color($selector, $modifier: false) {
     @if ($modifier) {
-        @if (type-of($modifier) == 'number') {
+        @if (type-of($modifier)=='number') {
             @return rgba(var(--theme-#{$selector}-rgb), #{$modifier});
         }
+
         @else {
             @return var(--theme-#{$selector}-#{$modifier});
         }
     }
+
     @else {
         @return var(--theme-#{$selector});
     }
@@ -60,14 +78,24 @@
     @return Color($selector + "-contrast", $modifier);
 }
 
+@function Contrast($selector, $modifier: false) {
+    @return Color($selector + "-contrast", $modifier);
+}
+
+@function Variable($selector, $default: 'unset') {
+    @return var(--theme-v-#{$selector}, #{$default});
+}
+
 // Use and render the theme variables as css
 @mixin UseTheme($theme) {
     $_light: map.get($theme, "light");
     $_dark: map.get($theme, "dark");
     $_steps: map.get($theme, "steps");
+    $_variables: map.get($theme, "variables");
 
     :root {
         @include GeneratePalette($_light, $_steps);
+        @include GenerateVariables($_variables);
 
         @if $_dark {
             @include DarkMode {
@@ -78,37 +106,37 @@
 }
 
 @mixin DarkMode {
-    @media (prefers-color-scheme: dark)  {
+    @media (prefers-color-scheme: dark) {
         @content;
     }
 }
 
 @mixin ReducedMotion {
-    @media (prefers-reduced-motion)  {
+    @media (prefers-reduced-motion) {
         @content;
     }
 }
 
 @mixin Landscape {
-    @media (orientation: landscape)  {
+    @media (orientation: landscape) {
         @content;
     }
 }
 
 @mixin Portrait {
-    @media (orientation: portrait)  {
+    @media (orientation: portrait) {
         @content;
     }
 }
 
 @mixin JavaScriptDisabled {
-    @media (scripting: none)  {
+    @media (scripting: none) {
         @content;
     }
 }
 
 @mixin JavaScriptEnabled {
-    @media (scripting: enabled)  {
+    @media (scripting: enabled) {
         @content;
     }
 }

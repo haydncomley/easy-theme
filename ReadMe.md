@@ -8,12 +8,12 @@ npm install easy-theme
 ```
 
 ## "Here's one I made earlier" 🧱
-This is just a quick overview of some of the features within `easy-theme` and how they work. Just `@use` the package in any SCSS file you want to use tht tooling.
+This is just a quick overview of some of the features within `easy-theme` and how they work. Just `@use` the package in any SCSS file you want to use the tooling, or import helper functions within JavaScript or TypeScript with `import { setLightTheme } from 'easy-theme';`.
 ```scss
 // index.scss
 
 // 1. Import the tools.
-@use "~easy-theme" as theme;
+@use "easy-theme" as theme;
 
 // 2. Create your theme.
 $light-theme: (
@@ -25,10 +25,16 @@ $dark-theme: (
     'background': (#000000, #FFFFFF),
 );
 
+$variables: (
+    'spacing': .75rem,
+    'radius': .2rem,
+);
+
 // 3. Let easy-theme do the rest!
 @include theme.UseTheme((
     light: $light-theme,
     dark: $dark-theme,
+    variables: $variables,
 ));
 
 html, body {
@@ -38,19 +44,29 @@ html, body {
 
 ```scss
 // button.scss
-@use "~easy-theme" as theme;
+@use "easy-theme" as theme;
 
 button {
     background: theme.Color('primary');
     color: theme.Text('primary');
     border: 1px solid theme.Color('primary', 'darker');
+    padding: theme.Variable('spacing');
 }
+```
+
+```JavaScript
+// index.js
+import { setLightTheme } from 'easy-theme';
+
+setLightTheme({
+    'primary': ['#1BFF72', '#ffffff', true]
+});
 ```
 
 ## Getting Started 🎬
 1. Import `easy-theme` into any file that you want to use the tooling.
 ```scss
-@use "~easy-theme" as theme;
+@use "easy-theme" as theme;
 ```
 2. Define your colours
 ```scss
@@ -62,7 +78,7 @@ $light-theme: (
     'primary': (#1BFF72, #FFFFFF, true),
 
     // Syntax:
-    // 'variable-name': (color, contrast, create-steps?),
+    // 'color-name': (color, contrast, create-steps?),
 );
 ```
 3. Generate the theme (normally you would define this in your index or global style sheet but anywhere will work).
@@ -100,10 +116,14 @@ button {
 ```
 
 ## Theming Syntax ⚙️
-- `variable-name: string`: The name of the css variable to generate (e.g. background, navbar, primary, etc.)
+- `color-name: string`: The name of the css variable to generate (e.g. background, navbar, primary, etc.)
 - `color: hex`: The core variable color.
 - `contrast: hex`: This is a contrasting color, this is mainly used for when you want to display text or icons on top of the colour provided.
 - `create-steps?: boolean`: This is an optional value that if `true` will create extra variables for consistent theme steps (e.g. lighter, darker, darkest, etc.).
+
+## Variable Syntax 🧑‍💻
+- `variable-name: css-value`: The name of the CSS variable to generate (e.g. background, navbar, primary, etc.) and any valid CSS value
+- `default?: css-value`: Any valid CSS value should the variable not be found.
 
 #  Dark-mode theming and custom steps.
 If you want to give your application some extra ✨ spice ✨ you can jazz up your theme with a dark mode and also some custom steps.
