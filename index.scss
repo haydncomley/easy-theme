@@ -1,3 +1,4 @@
+@use "sass:meta";
 @use "sass:color";
 @use "sass:map";
 @use "sass:list";
@@ -5,8 +6,8 @@
 @mixin ThemeColor($selector, $hex, $contrast, $generate-extras, $steps) {
     --theme-#{$selector}: #{$hex};
     --theme-#{$selector}-contrast: #{$contrast};
-    --theme-#{$selector}-rgb: #{color.red($hex), color.green($hex), color.blue($hex)};
-    --theme-#{$selector}-contrast-rgb: #{color.red($contrast), color.green($contrast), color.blue($contrast)};
+    --theme-#{$selector}-rgb: #{color.channel($hex, "red", $space: rgb), color.channel($hex, "green", $space: rgb), color.channel($hex, "blue", $space: rgb)};
+    --theme-#{$selector}-contrast-rgb: #{color.channel($contrast, "red", $space: rgb), color.channel($contrast, "green", $space: rgb), color.channel($contrast, "blue", $space: rgb)};
 
     @if ($generate-extras) {
         @if ($steps) {
@@ -27,7 +28,7 @@
 }
 
 @mixin ColorStep($selector, $step, $hex, $value) {
-    $color: color.adjust($hex, $lightness: $value);
+    $color: color.channel($hex, "adjust", $space: rgb, $lightness: $value);
     --theme-#{$selector}-#{$step}: #{$color};
 }
 
@@ -38,28 +39,26 @@
         $length: list.length($colours);
 
         @if $length >2 {
-            @include ThemeColor($selector, nth($colours, 1), nth($colours, 2), nth($colours, 3), $steps);
+            @include ThemeColor($selector, list.nth($colours, 1), list.nth($colours, 2), list.nth($colours, 3), $steps);
         }
 
         @else {
-            @include ThemeColor($selector, nth($colours, 1), nth($colours, 2), false, $steps);
+            @include ThemeColor($selector, list.nth($colours, 1), list.nth($colours, 2), false, $steps);
         }
 
     }
 }
 
 @mixin GenerateVariables($variables) {
-
     @each $selector,
     $variable in $variables {
         --theme-v-#{$selector}: #{$variable};
     }
 }
 
-// Get a theme variable from a selector name
 @function Color($selector, $modifier: false) {
     @if ($modifier) {
-        @if (type-of($modifier)=='number') {
+        @if (meta.type-of($modifier)=='number') {
             @return rgba(var(--theme-#{$selector}-rgb), #{$modifier});
         }
 
@@ -73,17 +72,32 @@
     }
 }
 
-// Get the text colour for a given selector name
+@function C($selector, $modifier: false) {
+    @return Color($selector, $modifier);
+}
+
 @function Text($selector, $modifier: false) {
     @return Color($selector + "-contrast", $modifier);
 }
 
 @function Contrast($selector, $modifier: false) {
-    @return Color($selector + "-contrast", $modifier);
+    @return Text($selector, $modifier);
+}
+
+@function T($selector, $modifier: false) {
+    @return Text($selector, $modifier);
 }
 
 @function Variable($selector, $default: 'unset') {
     @return var(--theme-v-#{$selector}, #{$default});
+}
+
+@function Var($selector, $default: 'unset') {
+    @return Variable($selector, $default);
+}
+
+@function V($selector, $default: 'unset') {
+    @return Variable($selector, $default);
 }
 
 // Use and render the theme variables as css
@@ -94,19 +108,60 @@
     $_variables: map.get($theme, "variables");
 
     :root {
+        color-scheme: light;
         @include GeneratePalette($_light, $_steps);
         @include GenerateVariables($_variables);
 
+        @if $_light {
+            @media (prefers-color-scheme: light) {
+                &:has(body:not([data-theme='dark'])) {
+                    color-scheme: light;
+                    @include GeneratePalette($_light, $_steps);
+                }
+            }
+
+            &:has(body[data-theme='light']) {
+                color-scheme: light;
+                @include GeneratePalette($_light, $_steps);
+            }
+        }
+
         @if $_dark {
-            @include DarkMode {
+            @media (prefers-color-scheme: dark) {
+                &:has(body:not([data-theme='light'])) {
+                    color-scheme: dark;
+                    @include GeneratePalette($_dark, $_steps);
+                }
+            }
+
+            &:has(body[data-theme='dark']) {
+                color-scheme: dark;
                 @include GeneratePalette($_dark, $_steps);
             }
         }
     }
 }
 
+@mixin LightMode {
+    @media (prefers-color-scheme: light) {
+        body:not([data-theme='dark']) & {
+            @content;
+        }
+    }
+    
+    body[data-theme='light'] & {
+        @content;
+    }
+}
+
 @mixin DarkMode {
     @media (prefers-color-scheme: dark) {
+        body:not([data-theme='light']) & {
+            @content;
+        }
+    }
+
+    body[data-theme='dark'] & {
         @content;
     }
 }
@@ -142,25 +197,25 @@
 }
 
 @mixin MobileTiny {
-    @media screen and (max-width: 350px) {
+    @media screen and (max-width: 375px) {
         @content;
     }
 }
 
 @mixin Mobile {
-    @media screen and (max-width: 600px) {
+    @media screen and (max-width: 768px) {
         @content;
     }
 }
 
 @mixin Tablet {
-    @media screen and (max-width: 1000px) {
+    @media screen and (max-width: 1024px) {
         @content;
     }
 }
 
 @mixin NotMobile {
-    @media screen and (min-width: 600px) {
+    @media screen and (min-width: 768px) {
         @content;
     }
 }
